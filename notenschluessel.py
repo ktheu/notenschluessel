@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-from fpdf import FPDF
-import io
 
 # Notenschlüssel-Definitionen
 PERCENTAGE_THRESHOLDS = [20, 27, 34, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86, 91, 96]
@@ -23,36 +21,24 @@ def calculate_grade(achieved_points, max_points):
     # Wenn >= 96%, dann 1+
     return POINTS[-1], GRADES[-1]
 
-def create_pdf(df, max_points):
-    """Erstellt ein PDF-Dokument mit der Notentabelle"""
-    pdf = FPDF()
-    pdf.add_page()
+def create_txt(df, max_points):
+    """Erstellt eine TXT-Datei mit der Notentabelle"""
+    lines = []
+    lines.append(f"Notenschluessel fuer maximal {max_points} Punkte")
+    lines.append("="* 70)
+    lines.append("")
     
-    # Titel
-    pdf.set_font('Arial', 'B', 16)
-    pdf.cell(0, 10, f'Notenschlüssel für maximal {max_points} Punkte', 0, 1, 'C')
-    pdf.ln(10)
+    # Header
+    header = f"{'Minimale Punkte':<20} {'Prozent':<15} {'Notenpunkte':<20} {'Note':<10}"
+    lines.append(header)
+    lines.append("-" * 70)
     
-    # Tabellen-Header
-    pdf.set_font('Arial', 'B', 12)
-    col_widths = [45, 35, 45, 30]
-    headers = ['Minimale Punkte', 'Prozent', 'Notenpunkte', 'Note']
-    
-    for i, header in enumerate(headers):
-        pdf.cell(col_widths[i], 10, header, 1, 0, 'C')
-    pdf.ln()
-    
-    # Tabellen-Daten
-    pdf.set_font('Arial', '', 11)
+    # Daten
     for _, row in df.iterrows():
-        pdf.cell(col_widths[0], 8, str(row['Minimale Punkte']), 1, 0, 'C')
-        pdf.cell(col_widths[1], 8, str(row['Prozent']), 1, 0, 'C')
-        pdf.cell(col_widths[2], 8, str(row['Notenpunkte']), 1, 0, 'C')
-        pdf.cell(col_widths[3], 8, str(row['Note']), 1, 0, 'C')
-        pdf.ln()
+        line = f"{str(row['Minimale Punkte']):<20} {str(row['Prozent']):<15} {str(row['Notenpunkte']):<20} {str(row['Note']):<10}"
+        lines.append(line)
     
-    # PDF als Bytes zurückgeben
-    return pdf.output(dest='S').encode('latin1')
+    return "\n".join(lines)
 
 def create_grade_table(max_points):
     """Erstellt eine Tabelle mit minimalen Punktzahlen für jede Note"""
@@ -126,13 +112,13 @@ st.dataframe(
     height=400
 )
 
-# Download-Button für PDF
-pdf_bytes = create_pdf(df, max_points)
+# Download-Button für TXT
+txt_content = create_txt(df, max_points)
 st.download_button(
     label="🖨️ Tabelle zum Druck herunterladen",
-    data=pdf_bytes,
-    file_name=f"notenschluessel_{max_points}_punkte.pdf",
-    mime="application/pdf",
+    data=txt_content,
+    file_name=f"notenschluessel_{max_points}_punkte.txt",
+    mime="text/plain",
 )
 
 # Optionaler Einzelrechner

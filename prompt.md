@@ -4,3 +4,4 @@ In der Tabelle sollen immer nur die minimale Punktzahl für jede Note und die en
 
 Statt dem Button 'Tabelle als CSV herunterladen' soll 'Tabelle zum Druck herunterladen' angezeigt werden und ein PDF-Dokument mit der Tabelle generiert und heruntergeladen werden können.
  
+Statt eines PDF-Dokuments soll eine txt-Datei mit der Tabelle generiert und heruntergeladen werden können.
