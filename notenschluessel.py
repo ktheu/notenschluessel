@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+from fpdf import FPDF
+import io
 
 # Notenschlüssel-Definitionen
 PERCENTAGE_THRESHOLDS = [20, 27, 34, 41, 46, 51, 56, 61, 66, 71, 76, 81, 86, 91, 96]
@@ -20,6 +22,37 @@ def calculate_grade(achieved_points, max_points):
     
     # Wenn >= 96%, dann 1+
     return POINTS[-1], GRADES[-1]
+
+def create_pdf(df, max_points):
+    """Erstellt ein PDF-Dokument mit der Notentabelle"""
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Titel
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(0, 10, f'Notenschlüssel für maximal {max_points} Punkte', 0, 1, 'C')
+    pdf.ln(10)
+    
+    # Tabellen-Header
+    pdf.set_font('Arial', 'B', 12)
+    col_widths = [45, 35, 45, 30]
+    headers = ['Minimale Punkte', 'Prozent', 'Notenpunkte', 'Note']
+    
+    for i, header in enumerate(headers):
+        pdf.cell(col_widths[i], 10, header, 1, 0, 'C')
+    pdf.ln()
+    
+    # Tabellen-Daten
+    pdf.set_font('Arial', '', 11)
+    for _, row in df.iterrows():
+        pdf.cell(col_widths[0], 8, str(row['Minimale Punkte']), 1, 0, 'C')
+        pdf.cell(col_widths[1], 8, str(row['Prozent']), 1, 0, 'C')
+        pdf.cell(col_widths[2], 8, str(row['Notenpunkte']), 1, 0, 'C')
+        pdf.cell(col_widths[3], 8, str(row['Note']), 1, 0, 'C')
+        pdf.ln()
+    
+    # PDF als Bytes zurückgeben
+    return pdf.output(dest='S').encode('latin1')
 
 def create_grade_table(max_points):
     """Erstellt eine Tabelle mit minimalen Punktzahlen für jede Note"""
@@ -93,13 +126,13 @@ st.dataframe(
     height=400
 )
 
-# Download-Button für CSV
-csv = df.to_csv(index=False, encoding='utf-8-sig')
+# Download-Button für PDF
+pdf_bytes = create_pdf(df, max_points)
 st.download_button(
-    label="📥 Tabelle als CSV herunterladen",
-    data=csv,
-    file_name=f"notenschluessel_{max_points}_punkte.csv",
-    mime="text/csv",
+    label="🖨️ Tabelle zum Druck herunterladen",
+    data=pdf_bytes,
+    file_name=f"notenschluessel_{max_points}_punkte.pdf",
+    mime="application/pdf",
 )
 
 # Optionaler Einzelrechner
