@@ -88,7 +88,7 @@ df = create_grade_table(max_points)
 # Zeige die Tabelle
 st.dataframe(
     df,
-    use_container_width=True,
+    width='stretch',
     hide_index=True,
     height=400
 )
