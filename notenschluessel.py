@@ -143,3 +143,30 @@ with col2:
 with col3:
     percentage = (achieved / max_points) * 100 if max_points > 0 else 0
     st.metric("Note", grade, f"{percentage:.1f}%")
+
+
+st.markdown("---")
+st.subheader(f"Zwei Noten zusammenrechnen")
+
+col1, col2, col3, col4 = st.columns(4)
+# note1 = col1.text_input("Note 1 (z.B. 2+):", value="2+")
+# note2 = col2.text_input("Note 2 (z.B. 3-):", value="3-")
+note1 = col1.selectbox("Note 1:", GRADES, index=GRADES.index("2+"))
+note2 = col2.selectbox("Note 2:", GRADES, index=GRADES.index("3-"))
+gewicht1 = col3.number_input("Gewicht % Note 1:", min_value=0, max_value=100, value=50, step=5)
+gewicht2 = 100 - gewicht1
+col4.write(f"Note 2: {gewicht2}%")
+
+if note1 in GRADES and note2 in GRADES:
+    np1 = POINTS[GRADES.index(note1)]
+    np2 = POINTS[GRADES.index(note2)]
+    combined_np = (np1 * gewicht1 + np2 * gewicht2) / 100
+    # Finde die Note für die kombinierte Notenpunkte
+    for i in range(len(POINTS)):
+        if combined_np <= POINTS[i]:
+            combined_grade = GRADES[i]
+            break
+    else:
+        combined_grade = GRADES[-1]
+    
+    st.success(f"Die kombinierte Note ist: {combined_grade} ({combined_np:.2f} Notenpunkte)")
