@@ -157,16 +157,20 @@ gewicht1 = col3.number_input("Gewicht % Note 1:", min_value=0, max_value=100, va
 gewicht2 = 100 - gewicht1
 col4.write(f"Note 2: {gewicht2}%")
 
-if note1 in GRADES and note2 in GRADES:
-    np1 = POINTS[GRADES.index(note1)]
-    np2 = POINTS[GRADES.index(note2)]
-    combined_np = (np1 * gewicht1 + np2 * gewicht2) / 100
-    # Finde die Note für die kombinierte Notenpunkte
-    for i in range(len(POINTS)):
-        if combined_np <= POINTS[i]:
-            combined_grade = GRADES[i]
-            break
-    else:
-        combined_grade = GRADES[-1]
-    
-    st.success(f"Die kombinierte Note ist: {combined_grade} ({combined_np:.2f} Notenpunkte)")
+
+np1 = POINTS[GRADES.index(note1)]
+np2 = POINTS[GRADES.index(note2)]
+combined_np = (np1 * gewicht1 + np2 * gewicht2) / 100
+# st.write(f"Notenpunkte: {np1}  ; Notenpunkte 2: {np2} ; Kombinierte Notenpunkte: {combined_np:.2f}")
+# Finde die Note für die kombinierte Notenpunkte
+col1.write(f"Notenpunkte: {np1}")
+col2.write(f"Notenpunkte 2: {np2}")
+col3.write(f"Kombinierte Notenpunkte: {combined_np:.2f}")
+for i in range(len(POINTS)):
+    if combined_np <= POINTS[i]:
+        combined_grade = GRADES[i]
+        break
+else:
+    combined_grade = GRADES[-1]
+
+st.success(f"Die kombinierte Note ist: {combined_grade} ")
