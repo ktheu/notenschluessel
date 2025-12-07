@@ -164,7 +164,7 @@ combined_np = (np1 * gewicht1 + np2 * gewicht2) / 100
 # st.write(f"Notenpunkte: {np1}  ; Notenpunkte 2: {np2} ; Kombinierte Notenpunkte: {combined_np:.2f}")
 # Finde die Note für die kombinierte Notenpunkte
 col1.write(f"Notenpunkte: {np1}")
-col2.write(f"Notenpunkte 2: {np2}")
+col2.write(f"Notenpunkte: {np2}")
 col3.write(f"Kombinierte Notenpunkte: {combined_np:.2f}")
 for i in range(len(POINTS)):
     if combined_np <= POINTS[i]:
